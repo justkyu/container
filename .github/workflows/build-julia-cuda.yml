@@ -1,0 +1,23 @@
+name: Build Julia CUDA container
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest   # native x86_64 — no QEMU, no emulation
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t julia-cuda:latest .
+
+      - name: Save image as tarball
+        run: docker save julia-cuda:latest | gzip > julia-cuda.tar.gz
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: julia-cuda-image
+          path: julia-cuda.tar.gz
+          retention-days: 3
